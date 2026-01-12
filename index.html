@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="ms-MY">
+<html lang="ms-MY" class="overflow-hidden overscroll-none">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Matematik Ceria: Operasi Darab</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
@@ -10,41 +11,72 @@
 
   <style>
     /* --- UI STYLE (MASTER REFERENCE - TEMA HIJAU) --- */
-    body { 
-        font-family: 'Fredoka', sans-serif; 
-        background-color: #f0fdf4; 
-        background-image: radial-gradient(#86efac 2px, transparent 2px); 
-        background-size: 30px 30px; 
+    body {
+      font-family: 'Fredoka', sans-serif;
+      background-color: #f0fdf4;
+      background-image: radial-gradient(#86efac 2px, transparent 2px);
+      background-size: 30px 30px;
     }
-    
-    .game-card { 
-        background: white; 
-        border: 4px solid #475569; 
-        box-shadow: 8px 8px 0px #00000020; 
-        border-radius: 1.5rem; 
-        min-height: 600px; 
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
+
+    .game-card {
+      background: white;
+      border: 4px solid #475569;
+      box-shadow: 8px 8px 0px #00000020;
+      border-radius: 1.5rem;
+      /* min-height: 600px; REMOVED */
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      overflow: hidden;
     }
-    
+
     /* Buttons */
-    .btn-3d { 
-        transition: all 0.1s; 
-        border-bottom-width: 6px; 
-        border-color: rgba(0,0,0,0.2); 
-        transform: translateY(0); 
-        cursor: pointer; 
-        display: inline-block; 
+    .btn-3d {
+      transition: all 0.1s;
+      border-bottom-width: 6px;
+      border-color: rgba(0, 0, 0, 0.2);
+      transform: translateY(0);
+      cursor: pointer;
+      display: inline-block;
     }
-    .btn-3d:active:not(:disabled) { transform: translateY(4px); border-bottom-width: 2px; box-shadow: none; }
-    .btn-3d:disabled { opacity: 0.6; cursor: not-allowed; border-bottom-width: 6px; filter: grayscale(100%); }
+
+    .btn-3d:active:not(:disabled) {
+      transform: translateY(4px);
+      border-bottom-width: 2px;
+      box-shadow: none;
+    }
+
+    .btn-3d:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      border-bottom-width: 6px;
+      filter: grayscale(100%);
+    }
 
     /* Animation */
-    .shake { animation: shake 0.4s ease-in-out; border-color: #ef4444 !important; background-color: #fee2e2 !important; }
-    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px) rotate(-5deg); } 75% { transform: translateX(8px) rotate(5deg); } }
+    .shake {
+      animation: shake 0.4s ease-in-out;
+      border-color: #ef4444 !important;
+      background-color: #fee2e2 !important;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-8px) rotate(-5deg);
+      }
+
+      75% {
+        transform: translateX(8px) rotate(5deg);
+      }
+    }
 
     /* --- STYLE KHUSUS DARAB --- */
 
@@ -52,30 +84,35 @@
     .pattern-grid {
       display: grid;
       grid-template-columns: repeat(10, minmax(0, 1fr));
-      gap: 4px;
+      gap: 2px;
       background: #dcfce7;
-      padding: 8px;
-      border-radius: 1rem;
+      padding: 4px;
+      border-radius: 0.5rem;
       border: 3px solid #86efac;
+      max-width: 100%;
     }
+
     .pattern-cell {
-      height: 35px;
+      height: 25px;
+      width: 25px;
       display: flex;
       align-items: center;
       justify-content: center;
       background: white;
-      border-radius: 6px;
-      font-size: 0.9rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
       color: #475569;
       font-weight: 600;
       transition: all 0.3s ease;
     }
+
     .pattern-cell.highlight {
-      background-color: #22c55e; /* green-500 */
+      background-color: #22c55e;
+      /* green-500 */
       color: white;
       font-weight: bold;
       transform: scale(1.1);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       z-index: 10;
     }
 
@@ -90,8 +127,9 @@
       cursor: crosshair;
       user-select: none;
       width: 100%;
-      max-width: 500px;
+      max-width: 400px;
     }
+
     .array-cell {
       aspect-ratio: 1/1;
       border: 1px solid #e2e8f0;
@@ -99,71 +137,110 @@
       border-radius: 2px;
       transition: background-color 0.1s;
     }
+
     .array-cell.highlight {
-      background-color: #3b82f6; /* blue-500 */
+      background-color: #3b82f6;
+      /* blue-500 */
       border-color: #2563eb;
     }
+
     .array-cell.target-good {
-      background-color: #22c55e; /* green-500 */
+      background-color: #22c55e;
+      /* green-500 */
       border-color: #16a34a;
     }
 
     /* Aktiviti 5: Drag & Drop */
-    .draggable { cursor: grab; user-select: none; transition: transform 0.2s; }
-    .draggable:active { cursor: grabbing; transform: scale(1.1); }
-    
-    .drop-zone { 
-        border: 3px dashed #94a3b8; background-color: #f8fafc; 
-        transition: all .3s ease; border-radius: 0.75rem; 
-        min-width: 60px; min-height: 60px; 
-        display: inline-flex; align-items: center; justify-content: center;
-        font-weight: bold; color: #334155;
+    .draggable {
+      cursor: grab;
+      user-select: none;
+      transition: transform 0.2s;
     }
-    .drop-zone.drag-over { border-color: #3b82f6; background-color: #dbeafe; transform: scale(1.05); }
-    .drop-zone.filled { border: 3px solid #22c55e; background-color: #dcfce7; color: #15803d; border-style: solid; }
 
+    .draggable:active {
+      cursor: grabbing;
+      transform: scale(1.1);
+    }
+
+    .drop-zone {
+      border: 3px dashed #94a3b8;
+      background-color: #f8fafc;
+      transition: all .3s ease;
+      border-radius: 0.75rem;
+      min-width: 50px;
+      min-height: 50px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #334155;
+    }
+
+    .drop-zone.drag-over {
+      border-color: #3b82f6;
+      background-color: #dbeafe;
+      transform: scale(1.05);
+    }
+
+    .drop-zone.filled {
+      border: 3px solid #22c55e;
+      background-color: #dcfce7;
+      color: #15803d;
+      border-style: solid;
+    }
   </style>
 </head>
-<body class="min-h-screen text-slate-800 pb-10">
 
-  <div class="fixed top-4 left-0 right-0 z-50 px-4 pointer-events-none">
-    <div class="max-w-4xl mx-auto bg-green-400 border-4 border-green-600 rounded-full px-6 py-3 shadow-xl flex items-center justify-between pointer-events-auto transform hover:scale-[1.01] transition-transform">
+<body class="h-screen w-screen overflow-hidden text-slate-800 flex flex-col overscroll-none">
+
+  <div class="flex-none p-4 z-50 pointer-events-none w-full">
+    <div
+      class="max-w-4xl mx-auto bg-green-400 border-4 border-green-600 rounded-full px-4 py-2 shadow-xl flex items-center justify-between pointer-events-auto transform hover:scale-[1.01] transition-transform">
       <div class="flex items-center gap-3">
-        <span class="text-3xl animate-bounce">✖️</span>
-        <span id="info-text" class="text-xl font-bold text-green-900 leading-none mt-1">Operasi Darab (Pembelajaran)</span>
+        <span class="text-2xl animate-bounce">✖️</span>
+        <span id="info-text" class="text-lg font-bold text-green-900 leading-none mt-1">Operasi Darab
+          (Pembelajaran)</span>
       </div>
-      <button id="speak-btn" onclick="speakInfo()" class="bg-white hover:bg-green-50 text-green-600 border-2 border-green-200 rounded-full p-2 transition-colors shadow-sm">🔊</button>
+      <button id="speak-btn" onclick="speakInfo()"
+        class="bg-white hover:bg-green-50 text-green-600 border-2 border-green-200 rounded-full p-2 transition-colors shadow-sm">🔊</button>
     </div>
   </div>
-  <div class="h-24"></div>
 
-  <div class="max-w-6xl mx-auto p-4">
-    
-    <div class="game-card p-8 mb-8">
-        <div id="activity-content" class="w-full relative z-10 flex flex-col items-center justify-center h-full">
-            <div class="py-10 text-center">
-                <div class="text-8xl mb-6 animate-pulse">⚙️</div>
-                <h2 class="text-5xl font-bold text-emerald-600 mb-4">Konsep Darab</h2>
-                <p class="text-2xl text-slate-500 mb-8 font-semibold">Penerokaan Corak & Tatasusunan.</p>
-                <div class="text-4xl animate-bounce">👇</div>
-            </div>
+  <div class="flex-1 w-full max-w-5xl mx-auto p-2 flex flex-col min-h-0">
+
+    <div class="game-card p-4 mb-2 flex-1 w-full">
+      <div id="activity-content"
+        class="w-full relative z-10 flex flex-col items-center justify-center h-full overflow-hidden">
+        <div class="py-10 text-center">
+          <div class="text-8xl mb-6 animate-pulse">⚙️</div>
+          <h2 class="text-4xl font-bold text-emerald-600 mb-4">Konsep Darab</h2>
+          <p class="text-lg text-slate-500 mb-8 font-semibold">Penerokaan Corak & Tatasusunan.</p>
+          <div class="text-4xl animate-bounce">👇</div>
         </div>
+      </div>
     </div>
 
-    <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-6 border-2 border-white">
-      <h3 class="text-2xl font-bold text-slate-700 mb-4 text-center">🎮 Pilih Aktiviti</h3>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-        <button onclick="loadActivity(1)" class="btn-3d bg-blue-500 text-white font-bold py-4 px-2 rounded-xl text-lg">⚙️ Mesin Kumpul</button>
-        <button onclick="loadActivity(2)" class="btn-3d bg-green-500 text-white font-bold py-4 px-2 rounded-xl text-lg">🎨 Corak Sifir</button>
-        <button onclick="loadActivity(3)" class="btn-3d bg-purple-500 text-white font-bold py-4 px-2 rounded-xl text-lg">▦ Teroka Petak</button>
-        <button onclick="loadActivity(4)" class="btn-3d bg-orange-500 text-white font-bold py-4 px-2 rounded-xl text-lg">🎯 Bina Petak</button>
-        <button onclick="loadActivity(5)" class="btn-3d bg-rose-500 text-white font-bold py-4 px-2 rounded-xl text-lg">✏️ Isi Tempat</button>
+    <div class="flex-none bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-2 border-2 border-white">
+      <h3 class="text-lg font-bold text-slate-700 mb-1 text-center">🎮 Pilih Aktiviti</h3>
+
+      <div class="grid grid-cols-5 gap-2 mb-2">
+        <button onclick="loadActivity(1)"
+          class="btn-3d bg-blue-500 text-white font-bold py-2 rounded-xl text-xs">⚙️<br>Kumpul</button>
+        <button onclick="loadActivity(2)"
+          class="btn-3d bg-green-500 text-white font-bold py-2 rounded-xl text-xs">🎨<br>Corak</button>
+        <button onclick="loadActivity(3)"
+          class="btn-3d bg-purple-500 text-white font-bold py-2 rounded-xl text-xs">▦<br>Teroka</button>
+        <button onclick="loadActivity(4)"
+          class="btn-3d bg-orange-500 text-white font-bold py-2 rounded-xl text-xs">🎯<br>Bina</button>
+        <button onclick="loadActivity(5)"
+          class="btn-3d bg-rose-500 text-white font-bold py-2 rounded-xl text-xs">✏️<br>Sifir</button>
       </div>
 
-      <div class="flex justify-center gap-4 border-t-2 border-slate-100 pt-6">
-        <button onclick="clearActivity()" class="btn-3d bg-slate-400 text-white font-bold py-2 px-6 rounded-full text-lg">🏠 Menu</button>
-        <button onclick="nextActivity()" class="btn-3d bg-indigo-500 text-white font-bold py-2 px-8 rounded-full text-xl">Seterusnya ➡️</button>
+      <div class="flex justify-center gap-4 border-t-2 border-slate-100 pt-2">
+        <button onclick="clearActivity()"
+          class="btn-3d bg-slate-400 text-white font-bold py-1 px-4 rounded-full text-base">🏠 Menu</button>
+        <button onclick="nextActivity()"
+          class="btn-3d bg-indigo-500 text-white font-bold py-1 px-6 rounded-full text-lg">Seterusnya ➡️</button>
       </div>
     </div>
   </div>
@@ -174,37 +251,37 @@
     let ttsEnabled = false;
     let currentInfo = "Pilih aktiviti untuk mula belajar darab!";
     let draggedElement = null;
-    
+
     // State Aktiviti
     let arrayDragState = { drawing: false, startCell: null };
     let builderState = { target: 0, question: [12, 18, 20, 16, 24] };
 
     function triggerWin() { confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } }); }
 
-    function speak(text) { 
-        if (!ttsEnabled || !('speechSynthesis' in window)) return; 
-        window.speechSynthesis.cancel(); 
-        const u = new SpeechSynthesisUtterance(text); u.lang = 'ms-MY'; u.rate = 0.95; u.pitch = 1.05; 
-        const ms = window.speechSynthesis.getVoices().find(v => v.lang === 'ms-MY' || v.lang?.startsWith('ms')); 
-        if (ms) u.voice = ms; 
-        window.speechSynthesis.speak(u); 
+    function speak(text) {
+      if (!ttsEnabled || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text); u.lang = 'ms-MY'; u.rate = 0.95; u.pitch = 1.05;
+      const ms = window.speechSynthesis.getVoices().find(v => v.lang === 'ms-MY' || v.lang?.startsWith('ms'));
+      if (ms) u.voice = ms;
+      window.speechSynthesis.speak(u);
     }
-    
-    function setInfo(text) { 
-        currentInfo = text; const infoEl = document.getElementById('info-text'); 
-        infoEl.style.opacity = 0; setTimeout(() => { infoEl.textContent = text; infoEl.style.opacity = 1; }, 200); 
+
+    function setInfo(text) {
+      currentInfo = text; const infoEl = document.getElementById('info-text');
+      infoEl.style.opacity = 0; setTimeout(() => { infoEl.textContent = text; infoEl.style.opacity = 1; }, 200);
     }
-    
-    function speakInfo() { 
-        if (!ttsEnabled) { ttsEnabled = true; document.getElementById('speak-btn').classList.add('bg-green-100', 'text-green-600'); } 
-        speak(currentInfo); 
+
+    function speakInfo() {
+      if (!ttsEnabled) { ttsEnabled = true; document.getElementById('speak-btn').classList.add('bg-green-100', 'text-green-600'); }
+      speak(currentInfo);
     }
 
     /* --- DRAG & DROP HELPERS (Aktiviti 5) --- */
-    window.dragStart = function(e) { draggedElement = e.target; e.target.classList.add('opacity-50'); }
-    window.dragEnd = function(e) { e.target.classList.remove('opacity-50'); document.querySelectorAll('.drop-zone').forEach(z=>z.classList.remove('drag-over')); }
-    window.allowDrop = function(e) { e.preventDefault(); if (e.currentTarget.classList.contains('drop-zone')) e.currentTarget.classList.add('drag-over'); }
-    window.dragLeave = function(e) { if (e.currentTarget.classList.contains('drop-zone')) e.currentTarget.classList.remove('drag-over'); }
+    window.dragStart = function (e) { draggedElement = e.target; e.target.classList.add('opacity-50'); }
+    window.dragEnd = function (e) { e.target.classList.remove('opacity-50'); document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over')); }
+    window.allowDrop = function (e) { e.preventDefault(); if (e.currentTarget.classList.contains('drop-zone')) e.currentTarget.classList.add('drag-over'); }
+    window.dragLeave = function (e) { if (e.currentTarget.classList.contains('drop-zone')) e.currentTarget.classList.remove('drag-over'); }
 
     /* --- ROUTER --- */
     function loadActivity(n) {
@@ -212,19 +289,19 @@
       const content = document.getElementById('activity-content');
       content.style.opacity = 0;
       setTimeout(() => {
-          if (n === 1) loadMachineActivity(content);
-          if (n === 2) loadPatternActivity(content);
-          if (n === 3) loadArrayExplorerActivity(content);
-          if (n === 4) loadArrayBuilderActivity(content);
-          if (n === 5) loadEquationActivity(content);
-          content.style.opacity = 1;
+        if (n === 1) loadMachineActivity(content);
+        if (n === 2) loadPatternActivity(content);
+        if (n === 3) loadArrayExplorerActivity(content);
+        if (n === 4) loadArrayBuilderActivity(content);
+        if (n === 5) loadEquationActivity(content);
+        content.style.opacity = 1;
       }, 200);
     }
 
     function clearActivity() {
-        currentActivity = 0;
-        document.getElementById('activity-content').innerHTML = `<div class="py-10 text-center"><div class="text-8xl mb-6 animate-pulse">⚙️</div><h2 class="text-5xl font-bold text-emerald-600 mb-4">Konsep Darab</h2><p class="text-2xl text-slate-500 mb-8 font-semibold">Penerokaan Corak & Tatasusunan.</p></div>`;
-        setInfo("Pilih aktiviti untuk mula belajar!");
+      currentActivity = 0;
+      document.getElementById('activity-content').innerHTML = `<div class="py-10 text-center"><div class="text-8xl mb-6 animate-pulse">⚙️</div><h2 class="text-5xl font-bold text-emerald-600 mb-4">Konsep Darab</h2><p class="text-2xl text-slate-500 mb-8 font-semibold">Penerokaan Corak & Tatasusunan.</p></div>`;
+      setInfo("Pilih aktiviti untuk mula belajar!");
     }
     function nextActivity() { let next = currentActivity + 1; if (next > 5) next = 1; loadActivity(next); }
 
@@ -234,46 +311,43 @@
        ========================================= */
 
     /* 1. Mesin Pengumpulan */
-    function loadMachineActivity(content) {
-      setInfo("Tambah atau tolak Kumpulan dan Item. Tekan 'Jalankan!'.");
-      content.innerHTML = `
-        <div class="w-full max-w-4xl">
-            <h3 class="text-3xl font-bold text-blue-500 mb-6 text-center">⚙️ Mesin Pengumpulan</h3>
+    setInfo("Tambah atau tolak Kumpulan dan Item. Tekan 'Jalankan!'.");
+    content.innerHTML = `
+        <div class="w-full max-w-4xl flex flex-col h-full overflow-hidden">
+            <h3 class="text-xl font-bold text-blue-500 mb-2 text-center flex-none">⚙️ Mesin Pengumpulan</h3>
             
-            <div class="flex flex-col md:flex-row justify-center items-start gap-8">
-                <div class="bg-blue-50 p-6 rounded-2xl border-2 border-blue-200 w-full md:w-1/3">
-                    <div class="mb-6">
-                        <label class="text-lg font-bold text-slate-700">Bilangan Kumpulan:</label>
-                        <div class="flex items-center justify-center gap-4 mt-2">
-                            <button class="btn-3d bg-blue-500 text-white rounded-full w-10 h-10 text-xl font-bold" onclick="updateMachineValue('kumpulan', -1)">-</button>
-                            <span id="kumpulan-val" class="text-4xl font-bold text-blue-600 w-16 text-center bg-white rounded-lg">3</span>
-                            <button class="btn-3d bg-blue-500 text-white rounded-full w-10 h-10 text-xl font-bold" onclick="updateMachineValue('kumpulan', 1)">+</button>
+            <div class="flex flex-col md:flex-row justify-center items-start gap-4 flex-1 min-h-0">
+                <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200 w-full md:w-1/3 flex-none">
+                    <div class="mb-4">
+                        <label class="text-sm font-bold text-slate-700">Bilangan Kumpulan:</label>
+                        <div class="flex items-center justify-center gap-2 mt-2">
+                            <button class="btn-3d bg-blue-500 text-white rounded-full w-8 h-8 text-lg font-bold" onclick="updateMachineValue('kumpulan', -1)">-</button>
+                            <span id="kumpulan-val" class="text-2xl font-bold text-blue-600 w-12 text-center bg-white rounded-lg">3</span>
+                            <button class="btn-3d bg-blue-500 text-white rounded-full w-8 h-8 text-lg font-bold" onclick="updateMachineValue('kumpulan', 1)">+</button>
                         </div>
                     </div>
-                    <div class="mb-6">
-                        <label class="text-lg font-bold text-slate-700">Item setiap Kumpulan:</label>
-                        <div class="flex items-center justify-center gap-4 mt-2">
-                            <button class="btn-3d bg-blue-500 text-white rounded-full w-10 h-10 text-xl font-bold" onclick="updateMachineValue('item', -1)">-</button>
-                            <span id="item-val" class="text-4xl font-bold text-blue-600 w-16 text-center bg-white rounded-lg">4</span>
-                            <button class="btn-3d bg-blue-500 text-white rounded-full w-10 h-10 text-xl font-bold" onclick="updateMachineValue('item', 1)">+</button>
+                    <div class="mb-4">
+                        <label class="text-sm font-bold text-slate-700">Item setiap Kumpulan:</label>
+                        <div class="flex items-center justify-center gap-2 mt-2">
+                            <button class="btn-3d bg-blue-500 text-white rounded-full w-8 h-8 text-lg font-bold" onclick="updateMachineValue('item', -1)">-</button>
+                            <span id="item-val" class="text-2xl font-bold text-blue-600 w-12 text-center bg-white rounded-lg">4</span>
+                            <button class="btn-3d bg-blue-500 text-white rounded-full w-8 h-8 text-lg font-bold" onclick="updateMachineValue('item', 1)">+</button>
                         </div>
                     </div>
-                    <button class="btn-3d bg-green-500 text-white font-bold py-3 px-6 rounded-xl text-xl w-full" onclick="runMachine()">
+                    <button class="btn-3d bg-green-500 text-white font-bold py-2 px-4 rounded-xl text-lg w-full" onclick="runMachine()">
                         Jalankan! ▶️
                     </button>
                 </div>
 
-                <div class="w-full md:w-2/3">
-                    <div id="visual-output" class="bg-slate-100 border-2 border-slate-200 rounded-2xl p-4 min-h-[250px] flex flex-wrap gap-4 items-center justify-center mb-4"></div>
-                    <div id="equation-output" class="text-center text-4xl font-black text-blue-600 bg-white border-2 border-blue-100 p-4 rounded-xl shadow-sm">
+                <div class="w-full md:w-2/3 flex flex-col h-full">
+                    <div id="visual-output" class="bg-slate-100 border-2 border-slate-200 rounded-2xl p-2 flex-1 overflow-y-auto flex flex-wrap gap-2 items-center justify-center mb-2"></div>
+                    <div id="equation-output" class="text-center text-2xl font-black text-blue-600 bg-white border-2 border-blue-100 p-2 rounded-xl shadow-sm flex-none">
                         ...
                     </div>
                 </div>
             </div>
         </div>
       `;
-      runMachine(); 
-    }
 
     function updateMachineValue(id, delta) {
       const el = document.getElementById(`${id}-val`);
@@ -287,17 +361,17 @@
       const item = parseInt(document.getElementById('item-val').textContent);
       const total = kumpulan * item;
       const visualEl = document.getElementById('visual-output');
-      
-      visualEl.innerHTML = ''; 
+
+      visualEl.innerHTML = '';
       for (let i = 0; i < kumpulan; i++) {
-          let groupHtml = `<div class="bg-white border-2 border-blue-400 rounded-xl p-2 flex flex-wrap gap-1 justify-center w-20 shadow-sm">`;
-          for (let j = 0; j < item; j++) {
-            groupHtml += `<div class="w-4 h-4 bg-blue-500 rounded-full"></div>`;
-          }
-          groupHtml += `</div>`;
-          visualEl.innerHTML += groupHtml;
+        let groupHtml = `<div class="bg-white border-2 border-blue-400 rounded-xl p-2 flex flex-wrap gap-1 justify-center w-20 shadow-sm">`;
+        for (let j = 0; j < item; j++) {
+          groupHtml += `<div class="w-4 h-4 bg-blue-500 rounded-full"></div>`;
+        }
+        groupHtml += `</div>`;
+        visualEl.innerHTML += groupHtml;
       }
-      
+
       const equation = `${kumpulan} × ${item} = ${total}`;
       document.getElementById('equation-output').textContent = equation;
       const msg = `${kumpulan} kumpulan, ${item} item. Jumlahnya ${total}.`;
@@ -313,21 +387,23 @@
       }
 
       content.innerHTML = `
-        <div class="w-full max-w-3xl text-center">
-            <h3 class="text-3xl font-bold text-green-600 mb-6">🎨 Peneroka Corak Sifir</h3>
+        <div class="w-full max-w-3xl text-center flex flex-col h-full overflow-hidden">
+            <h3 class="text-xl font-bold text-green-600 mb-2 flex-none">🎨 Peneroka Corak Sifir</h3>
             
-            <div class="flex flex-wrap justify-center gap-3 mb-6">
-                <button class="btn-3d bg-green-100 text-green-800 font-bold py-2 px-4 rounded-lg" onclick="showPattern(2)">Sifir 2</button>
-                <button class="btn-3d bg-green-100 text-green-800 font-bold py-2 px-4 rounded-lg" onclick="showPattern(5)">Sifir 5</button>
-                <button class="btn-3d bg-green-100 text-green-800 font-bold py-2 px-4 rounded-lg" onclick="showPattern(10)">Sifir 10</button>
-                <button class="btn-3d bg-green-100 text-green-800 font-bold py-2 px-4 rounded-lg" onclick="showPattern(4)">Sifir 4</button>
-                <button class="btn-3d bg-slate-200 text-slate-600 font-bold py-2 px-4 rounded-lg" onclick="showPattern(1)">Sifir 1</button>
-                <button class="btn-3d bg-slate-200 text-slate-600 font-bold py-2 px-4 rounded-lg" onclick="showPattern(0)">Sifir 0</button>
-                <button class="btn-3d bg-rose-500 text-white font-bold py-2 px-4 rounded-lg" onclick="showPattern(-1)">Padam 🗑️</button>
+            <div class="flex flex-wrap justify-center gap-2 mb-2 flex-none">
+                <button class="btn-3d bg-green-100 text-green-800 font-bold py-1 px-3 rounded-lg text-xs" onclick="showPattern(2)">Sifir 2</button>
+                <button class="btn-3d bg-green-100 text-green-800 font-bold py-1 px-3 rounded-lg text-xs" onclick="showPattern(5)">Sifir 5</button>
+                <button class="btn-3d bg-green-100 text-green-800 font-bold py-1 px-3 rounded-lg text-xs" onclick="showPattern(10)">Sifir 10</button>
+                <button class="btn-3d bg-green-100 text-green-800 font-bold py-1 px-3 rounded-lg text-xs" onclick="showPattern(4)">Sifir 4</button>
+                <button class="btn-3d bg-slate-200 text-slate-600 font-bold py-1 px-3 rounded-lg text-xs" onclick="showPattern(1)">Sifir 1</button>
+                <button class="btn-3d bg-slate-200 text-slate-600 font-bold py-1 px-3 rounded-lg text-xs" onclick="showPattern(0)">Sifir 0</button>
+                <button class="btn-3d bg-rose-500 text-white font-bold py-1 px-3 rounded-lg text-xs" onclick="showPattern(-1)">Padam 🗑️</button>
             </div>
 
-            <div class="pattern-grid mb-4 mx-auto max-w-lg">${gridHtml}</div>
-            <div id="pattern-info" class="text-xl font-bold text-green-700 min-h-[2rem]"></div>
+            <div class="flex-1 w-full flex items-center justify-center min-h-0 overflow-hidden">
+                 <div class="pattern-grid mx-auto">${gridHtml}</div>
+            </div>
+            <div id="pattern-info" class="text-base font-bold text-green-700 min-h-[1.5rem] flex-none"></div>
         </div>
       `;
     }
@@ -335,17 +411,17 @@
     function showPattern(sifir) {
       document.querySelectorAll('.pattern-cell').forEach(cell => cell.classList.remove('highlight'));
       const infoEl = document.getElementById('pattern-info');
-      
+
       if (sifir === -1) { infoEl.textContent = 'Corak dipadamkan.'; return; }
-      if (sifir === 0) { 
-          infoEl.textContent = "Semua nombor darab 0 jadi 0. Tiada corak di sini."; 
-          speak("Semua nombor darab 0 jadi 0."); return; 
+      if (sifir === 0) {
+        infoEl.textContent = "Semua nombor darab 0 jadi 0. Tiada corak di sini.";
+        speak("Semua nombor darab 0 jadi 0."); return;
       }
-      
+
       for (let i = 1; i <= 100; i++) {
         if (sifir === 1 || i % sifir === 0) document.getElementById(`cell-${i}`).classList.add('highlight');
       }
-      
+
       const msg = `Corak Sifir ${sifir}.`;
       infoEl.textContent = msg;
       speak(msg);
@@ -385,7 +461,7 @@
     function loadArrayBuilderActivity(content) {
       const target = builderState.question[Math.floor(Math.random() * builderState.question.length)];
       builderState.target = target;
-      
+
       setInfo(`Bina segiempat yang ada ${target} kotak.`);
       let gridHtml = '';
       for (let r = 0; r < 10; r++) {
@@ -394,17 +470,17 @@
         }
       }
       content.innerHTML = `
-        <div class="w-full max-w-3xl text-center">
-            <h3 class="text-3xl font-bold text-orange-600 mb-2">🎯 Bina Tatasusunan</h3>
+        <div class="w-full max-w-3xl text-center flex flex-col h-full overflow-hidden">
+            <h3 class="text-xl font-bold text-orange-600 mb-2 flex-none">🎯 Bina Tatasusunan</h3>
             
-            <div class="flex items-center justify-center gap-4 mb-4 bg-orange-50 p-3 rounded-xl border border-orange-200">
-                <span class="text-xl text-slate-600 font-bold">Sasaran:</span>
-                <span class="text-5xl font-black text-orange-600">${target}</span>
+            <div class="flex items-center justify-center gap-4 mb-2 bg-orange-50 p-2 rounded-xl border border-orange-200 flex-none">
+                <span class="text-lg text-slate-600 font-bold">Sasaran:</span>
+                <span class="text-3xl font-black text-orange-600">${target}</span>
             </div>
             
-            <div id="builder-info" class="text-lg font-bold text-slate-500 mb-2">Lukis kotak...</div>
+            <div id="builder-info" class="text-base font-bold text-slate-500 mb-1 flex-none">Lukis kotak...</div>
             
-            <div class="flex justify-center mb-4">
+            <div class="flex-1 w-full flex items-center justify-center min-h-0 overflow-hidden mb-2">
                 <div class="array-grid" 
                      onmousedown="startArrayDrag(event)" 
                      onmouseover="doArrayDrag(event)" 
@@ -414,7 +490,7 @@
                 </div>
             </div>
             
-            <button class="btn-3d bg-slate-400 text-white font-bold py-2 px-6 rounded-xl" onclick="loadActivity(4)">Soalan Baru 🔄</button>
+            <button class="btn-3d bg-slate-400 text-white font-bold py-2 px-6 rounded-xl text-sm flex-none" onclick="loadActivity(4)">Soalan Baru 🔄</button>
         </div>
       `;
     }
@@ -437,17 +513,17 @@
       arrayDragState.drawing = false;
       arrayDragState.startCell = null;
     }
-    
+
     function highlightArrayCells(endCellData, finalClass = 'highlight') {
       const { startCell } = arrayDragState;
       if (!startCell) return;
-      
+
       const r1 = Math.min(startCell.row, endCellData.row);
       const r2 = Math.max(startCell.row, endCellData.row);
       const c1 = Math.min(startCell.col, endCellData.col);
       const c2 = Math.max(startCell.col, endCellData.col);
 
-      clearArrayGrid(); 
+      clearArrayGrid();
 
       let rows = r2 - r1 + 1;
       let cols = c2 - c1 + 1;
@@ -458,7 +534,7 @@
           if (cell) cell.classList.add(finalClass);
         }
       }
-      
+
       // Update info if Activity 3
       if (currentActivity === 3) {
         const total = rows * cols;
@@ -468,18 +544,18 @@
       }
       return { rows, cols, total: rows * cols };
     }
-    
+
     function clearArrayGrid() {
       document.querySelectorAll('.array-cell').forEach(c => {
         c.classList.remove('highlight', 'target-good');
       });
     }
-    
+
     function endArrayBuilder(e) {
       if (!arrayDragState.drawing) return;
       const { rows, cols, total } = highlightArrayCells(e.target.dataset);
       const infoEl = document.getElementById('builder-info');
-      
+
       if (total === builderState.target) {
         const msg = `Tahniah! ${rows} × ${cols} = ${total}.`;
         infoEl.textContent = msg;
@@ -501,16 +577,16 @@
     /* 5. Lengkapkan Ayat */
     function loadEquationActivity(content) {
       setInfo("Seret nombor merah ke tempat kosong untuk melengkapkan sifir.");
-      const numbers = [6, 10, 12, 16, 18, 20, 8]; 
+      const numbers = [6, 10, 12, 16, 18, 20, 8];
       content.innerHTML = `
-        <div class="w-full max-w-3xl text-center">
-            <h3 class="text-3xl font-bold text-red-600 mb-6">✏️ Lengkapkan Ayat</h3>
+        <div class="w-full max-w-3xl text-center flex flex-col h-full overflow-hidden">
+            <h3 class="text-xl font-bold text-red-600 mb-2 flex-none">✏️ Lengkapkan Ayat</h3>
             
-            <div class="bg-red-50 p-4 rounded-2xl border-2 border-red-200 mb-8">
-                <div class="text-sm font-bold text-red-400 uppercase mb-2">Pilihan Jawapan</div>
-                <div class="flex flex-wrap justify-center gap-4">
-                    ${numbers.sort(()=>Math.random()-0.5).map(num => `
-                        <div class="btn-3d bg-white border-red-200 text-red-600 font-bold text-2xl w-16 h-16 rounded-xl flex items-center justify-center draggable" 
+            <div class="bg-red-50 p-2 rounded-2xl border-2 border-red-200 mb-2 flex-none">
+                <div class="text-xs font-bold text-red-400 uppercase mb-1">Pilihan Jawapan</div>
+                <div class="flex flex-wrap justify-center gap-2">
+                    ${numbers.sort(() => Math.random() - 0.5).map(num => `
+                        <div class="btn-3d bg-white border-red-200 text-red-600 font-bold text-xl w-12 h-12 rounded-xl flex items-center justify-center draggable" 
                              draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" data-number="${num}">
                              ${num}
                         </div>
@@ -518,7 +594,7 @@
                 </div>
             </div>
 
-            <div id="equation-list" class="flex flex-col items-center gap-4">
+            <div id="equation-list" class="flex flex-col items-center gap-2 flex-1 overflow-y-auto">
                 ${renderEquationRow(4, 5, 20)}
                 ${renderEquationRow(3, 2, 6)}
                 ${renderEquationRow(2, 10, 20)}
@@ -529,7 +605,7 @@
     }
 
     function renderEquationRow(n1, n2, ans) {
-        return `
+      return `
         <div class="flex items-center gap-2 md:gap-4 text-3xl md:text-4xl font-bold text-slate-700 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
             <span class="w-12 text-center">${n1}</span>
             <span class="text-slate-400">×</span>
@@ -542,26 +618,27 @@
 
     function dropOnEquation(e) {
       e.preventDefault(); e.currentTarget.classList.remove('drag-over'); if (!draggedElement) return;
-      
+
       const val = draggedElement.dataset.number;
       const correct = e.currentTarget.dataset.correct;
-      
+
       if (val === correct) {
         e.currentTarget.textContent = val;
         e.currentTarget.classList.add('filled');
         e.currentTarget.classList.remove('drop-zone');
-        draggedElement = null; 
-        
+        draggedElement = null;
+
         speak("Betul!");
         if (document.querySelectorAll('#equation-list .drop-zone').length === 0) {
-            triggerWin(); setInfo("Syabas! Semua selesai."); speak("Syabas! Semua selesai.");
+          triggerWin(); setInfo("Syabas! Semua selesai."); speak("Syabas! Semua selesai.");
         }
       } else {
         speak("Salah.");
-        e.currentTarget.classList.add('shake'); setTimeout(()=>e.currentTarget.classList.remove('shake'),500);
+        e.currentTarget.classList.add('shake'); setTimeout(() => e.currentTarget.classList.remove('shake'), 500);
       }
     }
 
   </script>
 </body>
+
 </html>
